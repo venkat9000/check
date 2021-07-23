@@ -1,0 +1,24 @@
+node('master') 
+{
+    stage('cont download')
+    {
+        git 'https://github.com/intelliqittrainings/maven.git'
+    }
+    stage('cont build')
+    {
+        sh 'mvn package'
+    }
+    stage('cont download')
+    {
+        sh 'scp /var/lib/jenkins/workspace/myscript/webapp/target/webapp.war ubuntu@172.31.5.62:/var/lib/tomcat9/webapps/venkatapp.war'
+    }
+    stage('cont testing')
+    {
+        git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+        sh 'java -jar /var/lib/jenkins/workspace/myscript/testing.jar'
+    }
+    stage('cont delivery')
+    {
+        sh 'scp /var/lib/jenkins/workspace/myscript/webapp/target/webapp.war ubuntu@172.31.0.207:/var/lib/tomcat9/webapps/prodapp.war'
+    }
+}
